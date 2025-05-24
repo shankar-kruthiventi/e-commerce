@@ -1,0 +1,7 @@
+npm run lint && npm run format
+if [ $? -eq 0 ]; then
+  echo "Pre-commit checks passed!"
+else
+  echo "Pre-commit checks failed!"
+  exit 1
+fi
