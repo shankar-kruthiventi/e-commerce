@@ -6,9 +6,9 @@ services:
     container_name: postgres
     restart: always
     environment:
-      POSTGRES_USER: nestuser
-      POSTGRES_PASSWORD: nestpassword
-      POSTGRES_DB: nestdb
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
     ports:
       - '5432:5432'
     volumes:
@@ -16,7 +16,7 @@ services:
     networks:
       - nestjs-network
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "nestuser"]
+      test: ['CMD', 'pg_isready', '-U', 'postgres']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -35,7 +35,8 @@ services:
     env_file:
       - .env
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - nestjs-network
     volumes:
