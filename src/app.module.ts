@@ -13,19 +13,25 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     ProductsModule,
     UsersModule,
     ConfigModule.forRoot({
+      envFilePath: `.env.${process.env.NODE_ENV}`,
       isGlobal: true, // Makes ConfigService available everywhere
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get<string>('DATABASE_HOST', 'localhost'),
+        host:
+          configService.get<string>('NODE_ENV') === 'development'
+            ? configService.get<string>('DATABASE_HOST', 'localhost')
+            : configService.get<string>('DATABASE_HOST', 'postgres'),
         port: parseInt(configService.get<string>('DATABASE_PORT') || '5432', 10),
         username: configService.get<string>('DATABASE_USERNAME'),
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: configService.get<string>('NODE_ENV') === 'development', // Don't use in production
+        synchronize:
+          configService.get<string>('NODE_ENV') === 'development' ||
+          configService.get<string>('NODE_ENV') === 'production', // Don't use in production
         logging: true,
         retryDelay: 5000,
       }),
