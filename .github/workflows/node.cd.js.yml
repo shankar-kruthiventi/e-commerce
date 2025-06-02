@@ -16,8 +16,11 @@ jobs:
       - name: Delete Old docker container
         run: sudo docker rm -f repo090924-container || true
       - name: Run Docker Container
-        env:
-          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
-          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
-          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-        run: sudo docker run -d -p 3000:3000 -e DATABASE_HOST=$DATABASE_HOST -e DATABASE_USERNAME=$DATABASE_USERNAME -e DATABASE_PASSWORD=$DATABASE_PASSWORD --name repo090924-container sankarkruthiventi/repo090924
+        run: |
+          sudo docker run -d \
+            -e NODE_ENV=production \
+            -e DATABASE_HOST=${{ secrets.DATABASE_HOST }} \
+            -e DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }} \
+            -e DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }} \
+            --name repo090924-container \
+            sankarkruthiventi/repo090924:latest
