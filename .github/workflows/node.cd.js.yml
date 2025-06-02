@@ -22,5 +22,7 @@ jobs:
             -e DATABASE_HOST=${{ secrets.DATABASE_HOST }} \
             -e DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }} \
             -e DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }} \
+            -e DATABASE_PORT=5432 \
+            -e DATABASE_NAME=${{ secrets.DATABASE_NAME }} \
             --name repo090924-container \
             sankarkruthiventi/repo090924:latest
