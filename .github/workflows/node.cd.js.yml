@@ -11,6 +11,15 @@ jobs:
     runs-on: self-hosted
 
     steps:
+      - name: Login Dockerhub
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: sudo docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      - name: Pull Docker image
+        run: sudo docker pull sankarkruthiventi/repo090924:latest
+      - name: Delete Old docker container
+        run: sudo docker rm -f repo
       - name: Pull Docker image
         run: sudo docker pull sankarkruthiventi/repo090924:latest
       - name: Delete Old docker container
