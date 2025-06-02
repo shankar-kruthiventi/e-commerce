@@ -33,5 +33,6 @@ jobs:
             -e DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }} \
             -e DATABASE_PORT=5432 \
             -e DATABASE_NAME=${{ secrets.DATABASE_NAME }} \
+            -p 3000:3000 \
             --name repo090924-container \
             sankarkruthiventi/repo090924:latest
