@@ -21,6 +21,8 @@ jobs:
 
       - name: Create Docker volume
         run: sudo docker volume create postgres_data || true
+      - name: Stop & Remove existing Postgres container (if running)
+        run: sudo docker rm -f postgres || true
 
       - name: Start Postgres container
         run: |
