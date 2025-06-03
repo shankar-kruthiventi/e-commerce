@@ -41,7 +41,7 @@ jobs:
       - name: Wait for Postgres to be healthy
         run: |
           for i in {1..15}; do
-            health=$(docker inspect --format='{{.State.Health.Status}}' postgres)
+            health=$(sudo docker inspect --format='{{.State.Health.Status}}' postgres)
               if [ "$health" = "healthy" ]; then
                 echo "Postgres is healthy!"
                 exit 0
@@ -64,7 +64,6 @@ jobs:
             -e DATABASE_HOST=${{ secrets.DATABASE_HOST }} \
             -e DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }} \
             -e DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }} \
-            -e DATABASE_PORT=5432 \
             -e DATABASE_NAME=${{ secrets.DATABASE_NAME }} \
             -p 3000:3000 \
             --network nestjs-network \
