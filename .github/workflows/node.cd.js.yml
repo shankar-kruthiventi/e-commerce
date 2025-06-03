@@ -24,7 +24,7 @@ jobs:
 
       - name: Start Postgres container
         run: |
-          docker run -d \
+          sudo docker run -d \
             --name postgres \
             --health-cmd="pg_isready -U ${{secrets.DATABASE_USERNAME}}" \
             --health-interval=10s \
