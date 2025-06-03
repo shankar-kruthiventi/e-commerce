@@ -16,14 +16,47 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: sudo docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-      - name: Pull Docker image
-        run: sudo docker pull sankarkruthiventi/repo090924:latest
-      - name: Delete Old docker container
-        run: sudo docker rm -f repo
-      - name: Pull Docker image
-        run: sudo docker pull sankarkruthiventi/repo090924:latest
+      - name: Create Docker network
+        run: sudo docker network create nestjs-network || true
+
+      - name: Create Docker volume
+        run: sudo docker volume create postgres_data || true
+
+      - name: Start Postgres container
+        run: |
+          docker run -d \
+            --name postgres \
+            --health-cmd="pg_isready -U ${{secrets.DATABASE_USERNAME}}" \
+            --health-interval=10s \
+            --health-timeout=5s \
+            --health-retries=5 \
+            -e POSTGRES_USER=${{ secrets.DATABASE_USERNAME }} \
+            -e POSTGRES_PASSWORD=${{ secrets.DATABASE_PASSWORD }} \
+            -e POSTGRES_DB=${{ secrets.DATABASE_NAME }} \
+            -p 5432:5432 \
+            --network nestjs-network \
+            -v postgres_data:/var/lib/postgresql/data \
+            postgres:15
+
+      - name: Wait for Postgres to be healthy
+        run: |
+          for i in {1..15}; do
+            health=$(docker inspect --format='{{.State.Health.Status}}' postgres)
+              if [ "$health" = "healthy" ]; then
+                echo "Postgres is healthy!"
+                exit 0
+              fi
+              echo "Waiting for Postgres to be healthy..."
+              sleep 5
+            done
+            echo "Postgres did not become healthy in time." >&2
+            docker logs postgres
+            exit 1
+
       - name: Delete Old docker container
         run: sudo docker rm -f repo090924-container || true
+      - name: Pull Docker image
+        run: sudo docker pull sankarkruthiventi/repo090924:latest
       - name: Run Docker Container
         run: |
           sudo docker run -d \
@@ -34,5 +67,6 @@ jobs:
             -e DATABASE_PORT=5432 \
             -e DATABASE_NAME=${{ secrets.DATABASE_NAME }} \
             -p 3000:3000 \
+            --network nestjs-network \
             --name repo090924-container \
             sankarkruthiventi/repo090924:latest
