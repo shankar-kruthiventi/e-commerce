@@ -25,7 +25,6 @@ export class AuthController {
     return this.authService.register(user);
   }
 
-  @HttpCode(201)
   @UseGuards(LocalAuthenticationGuard)
   @Post('login')
   login(@Req() request: { email: string } & Request) {
